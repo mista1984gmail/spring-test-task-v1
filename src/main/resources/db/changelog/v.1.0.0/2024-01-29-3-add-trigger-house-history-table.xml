@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet logicalFilePath="2024-01-29-3-add-trigger-house-history-table"
+               id="2024-01-29-3-add-trigger-house-history-table" author="s.mitskevich">
+        <createProcedure>
+            CREATE OR REPLACE FUNCTION addTenant()
+            RETURNS TRIGGER
+            LANGUAGE PLPGSQL
+            AS
+            $$
+            BEGIN
+            INSERT INTO house_history(house_id, person_id, create_date, person_type)
+            VALUES(NEW.resident_house, NEW.id , now(), 'TENANT');
+            RETURN NEW;
+            END;
+            $$
+        </createProcedure>
+     <sql>
+         CREATE TRIGGER houseHistoryCreateTenant
+             AFTER INSERT ON person
+             FOR EACH ROW
+             EXECUTE FUNCTION addTenant();
+     </sql>
+
+    </changeSet>
+
+</databaseChangeLog>

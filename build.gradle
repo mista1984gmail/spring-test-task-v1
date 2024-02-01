@@ -1,7 +1,9 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.2.2'
+	id 'org.springframework.boot' version '3.1.5'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id "io.freefair.lombok" version "6.5.1"
+	id 'org.liquibase.gradle' version '2.2.0'
 }
 
 group = 'com.example'
@@ -11,13 +13,65 @@ java {
 	sourceCompatibility = '17'
 }
 
+ext {
+	junitVersion = '5.9.2'
+	mockitoVersion = '5.6.0'
+	mapstructVersion = "1.5.5.Final"
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
 repositories {
 	mavenCentral()
 }
 
 dependencies {
+	//Spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	//DataBase
+	runtimeOnly 'org.postgresql:postgresql'
+
+	//Mapping
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+	//Lombok
+	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	//Logging
+	implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.20.0'
+
+	//Liquibase
+	implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.25.0'
+
+	//Testing
+	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.10.0'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.testcontainers:postgresql:1.19.3'
+	testImplementation 'org.testcontainers:testcontainers'
+	testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+
+	//Swagger
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.3'
+
+	//Wiremock
+	testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '3.0.1'
+
+	//Cache
+	implementation project(':cache-spring-boot-starter')
+
+	// Others
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1'
 }
 
 tasks.named('test') {

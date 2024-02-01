@@ -1,1 +1,3 @@
 rootProject.name = 'spring-test-task-v1'
+include 'cache-spring-boot-starter'
+
